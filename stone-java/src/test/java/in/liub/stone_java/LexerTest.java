@@ -1,11 +1,16 @@
 package in.liub.stone_java;
 
-import static org.junit.Assert.fail;
+import java.io.StringReader;
+
 import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class LexerTest {
     @Test
-    public void shouldFail() {
-        // fail("fail expected");
+    public void emptyInput() {
+        Lexer lexer = new Lexer(new StringReader(""));
+        assertThat(lexer.read(), is(Token.EOF));
     }
 }
