@@ -24,4 +24,13 @@ public class LexerTest {
         assertTrue(t.isNumber());
         assertEquals(7531, t.getNumber());
     }
+
+    @Test
+    public void singleIdentifier() {
+        Lexer lexer = new Lexer(new StringReader("test"));
+        Token t = lexer.read();
+
+        assertTrue(t.isIdentifier());
+        assertEquals("test", t.getText());
+    }
 }
