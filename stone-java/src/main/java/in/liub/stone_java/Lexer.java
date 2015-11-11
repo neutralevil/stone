@@ -8,7 +8,8 @@ import java.util.regex.Pattern;
 
 public class Lexer {
     private static Pattern pattern = Pattern.compile(
-            "[a-z_A-Z][a-z_A-Z0-9]*");
+            "(?<number>[0-9]+)" +
+            "|(?<id>[a-z_A-Z][a-z_A-Z0-9]*)");
 
     private final LineNumberReader reader;
 
@@ -27,14 +28,15 @@ public class Lexer {
         if (line == null)
             return Token.EOF;
 
-        try {
-            return new NumToken(Integer.parseInt(line));
-        } catch (NumberFormatException e) {
-            Matcher matcher = pattern.matcher(line);
-            if (matcher.lookingAt())
+        Matcher matcher = pattern.matcher(line);
+        if (matcher.lookingAt()) {
+            String m = matcher.group();
+            if (matcher.group("number") != null)
+                return new NumToken(Integer.parseInt(m));
+            else if (matcher.group("id") != null)
                 return new IdToken(matcher.group());
-            return Token.EOF;
         }
+        return Token.EOF;
     }
 }
 
