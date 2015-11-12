@@ -10,32 +10,23 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class LexerTest {
     @Test
     public void emptyInput() {
-        assertThat(tokens(""), theOnlyItem(Token.EOF));
+        assertThat(tokens(""), is(theOnly(Token.EOF)));
     }
 
     @Test
     public void singleNumber() {
-        Lexer lexer = new Lexer(new StringReader("7531"));
-        Token t = lexer.read();
-
-        assertTrue(t.isNumber());
-        assertEquals(7531, t.getNumber());
+        assertThat(tokensExceptEOF("7531"), is(theOnly(number(7531))));
     }
 
     @Test
     public void singleIdentifier() {
-        Lexer lexer = new Lexer(new StringReader("test"));
-        Token t = lexer.read();
-
-        assertTrue(t.isIdentifier());
-        assertEquals("test", t.getText());
+        assertThat(tokensExceptEOF("test"), is(theOnly(identifier("test"))));
     }
+
 
     private ArrayList<Token> tokens(String input) {
         return tokens(input, false);
@@ -59,10 +50,42 @@ public class LexerTest {
         return ret;
     }
 
-    private static TheOnlyItem theOnlyItem(Token token) {
+    private static TheOnlyItem theOnly(Token token) {
         return new TheOnlyItem(equalTo(token));
     }
 
+    private static TheOnlyItem theOnly(Matcher<Token> matcher) {
+        return new TheOnlyItem(matcher);
+    }
+
+    private static Matcher<Token> number(int num) {
+        return new TypeSafeDiagnosingMatcher<Token>() {
+            @Override
+            protected boolean matchesSafely(Token item,
+                                            Description mismatchDescription) {
+                return item.isNumber() && item.getNumber() == num;
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendValue(num);
+            }
+        };
+    }
+
+    private static Matcher<Token> identifier(String text) {
+        return new TypeSafeDiagnosingMatcher<Token>() {
+            @Override
+            protected boolean matchesSafely(Token item, Description mismatchDescription) {
+                return item.isIdentifier() && item.getText().equals(text);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText(text);
+            }
+        };
+    }
 }
 
 class TheOnlyItem extends TypeSafeDiagnosingMatcher<ArrayList<Token>> {
@@ -83,7 +106,6 @@ class TheOnlyItem extends TypeSafeDiagnosingMatcher<ArrayList<Token>> {
 
     @Override
     public void describeTo(Description description) {
-        description.appendText("is ")
-                .appendDescriptionOf(matcher);
+        description.appendDescriptionOf(matcher);
     }
 }
