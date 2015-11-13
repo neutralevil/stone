@@ -20,10 +20,13 @@ public abstract class Token {
         return false;
     }
 
+    public boolean isString() { return false; }
+
     public abstract String getText();
 
     @Override
     public String toString() {
         return getText();
     }
+
 }

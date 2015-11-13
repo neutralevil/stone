@@ -27,6 +27,12 @@ public class LexerTest {
         assertThat(tokensExceptEOF("test"), is(theOnly(identifier("test"))));
     }
 
+    @Test
+    public void simpleString() {
+        assertThat(tokensExceptEOF("\"a string\""),
+                is(theOnly(string("a string"))));
+    }
+
 
     private ArrayList<Token> tokens(String input) {
         return tokens(input, false);
@@ -86,6 +92,21 @@ public class LexerTest {
             }
         };
     }
+
+    private static Matcher<Token> string(String str) {
+        return new TypeSafeDiagnosingMatcher<Token>() {
+            @Override
+            protected boolean matchesSafely(Token item, Description mismatchDescription) {
+                return item.isString() && item.getText().equals(str);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText(str);
+            }
+        };
+    }
+
 }
 
 class TheOnlyItem extends TypeSafeDiagnosingMatcher<ArrayList<Token>> {

@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 public class Lexer {
     private static Pattern pattern = Pattern.compile(
             "(?<number>[0-9]+)" +
+            "|(?:\"(?<string>[^\"]*)\")" +
             "|(?<id>[a-z_A-Z][a-z_A-Z0-9]*)");
 
     private final LineNumberReader reader;
@@ -34,7 +35,9 @@ public class Lexer {
             if (matcher.group("number") != null)
                 return new NumToken(Integer.parseInt(m));
             else if (matcher.group("id") != null)
-                return new IdToken(matcher.group());
+                return new IdToken(matcher.group("id"));
+            else if (matcher.group("string") != null)
+                return new StrToken(matcher.group("string"));
         }
         return Token.EOF;
     }
@@ -72,6 +75,24 @@ class IdToken extends Token {
 
     @Override
     public boolean isIdentifier() {
+        return true;
+    }
+
+    @Override
+    public String getText() {
+        return text;
+    }
+}
+
+class StrToken extends Token {
+    private final String text;
+
+    public StrToken(String text) {
+        this.text = text;
+    }
+
+    @Override
+    public boolean isString() {
         return true;
     }
 
