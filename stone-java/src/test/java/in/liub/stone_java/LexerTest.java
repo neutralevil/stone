@@ -30,9 +30,14 @@ public class LexerTest {
     @Test
     public void simpleString() {
         assertThat(tokensExceptEOF("\"a string\""),
-                is(theOnly(string("a string"))));
+                   is(theOnly(string("a string"))));
     }
 
+    @Test
+    public void stringWithEscape() {
+        assertThat(tokensExceptEOF("\"\\nA\\\\B\\\"\""),
+                   is(theOnly(string("\nA\\B\""))));
+    }
 
     private ArrayList<Token> tokens(String input) {
         return tokens(input, false);
@@ -102,7 +107,7 @@ public class LexerTest {
 
             @Override
             public void describeTo(Description description) {
-                description.appendText(str);
+                description.appendValue(str);
             }
         };
     }
