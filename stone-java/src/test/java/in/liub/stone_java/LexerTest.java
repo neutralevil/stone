@@ -23,6 +23,11 @@ public class LexerTest {
     }
 
     @Test
+    public void singleNumberFollowingSpaces() {
+        assertThat(tokensExceptEOF(" \t7531"), is(theOnly(number(7531))));
+    }
+
+    @Test
     public void singleIdentifier() {
         assertThat(tokensExceptEOF("test"), is(theOnly(identifier("test"))));
     }
