@@ -11,7 +11,7 @@ public class Lexer {
             "\\s*(" +
             "(?<number>[0-9]+)" +
             "|(?:\"(?<string>(\\\\n|\\\\\\\\|\\\\\"|[^\"])*)\")" +
-            "|(?<id>[a-z_A-Z][a-z_A-Z0-9]*)" +
+            "|(?<id>[a-z_A-Z][a-z_A-Z0-9]*|==|<=|>=|&&|\\|\\||\\p{Punct})" +
             ")");
 
     private final LineNumberReader reader;
