@@ -18,6 +18,11 @@ public class LexerTest {
     }
 
     @Test
+    public void comment() {
+        assertThat(tokens("// this is the comment"), is(theOnly(Token.EOF)));
+    }
+
+    @Test
     public void singleNumber() {
         assertThat(tokensExceptEOF("7531"), is(theOnly(number(7531))));
     }
