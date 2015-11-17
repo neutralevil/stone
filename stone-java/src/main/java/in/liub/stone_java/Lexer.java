@@ -3,6 +3,7 @@ package in.liub.stone_java;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,12 +16,19 @@ public class Lexer {
             ")");
 
     private final LineNumberReader reader;
+    private ArrayList<Token> queue = new ArrayList<>();
 
     public Lexer(Reader reader) {
         this.reader = new LineNumberReader(reader);
     }
 
     public Token read() {
+        if (queue.isEmpty())
+            readLine();
+        return queue.remove(0);
+    }
+
+    private void readLine() {
         String line;
         try {
             line = reader.readLine();
@@ -28,22 +36,28 @@ public class Lexer {
             throw new RuntimeException("Unexpected", e);
         }
 
-        if (line == null)
-            return Token.EOF;
+        if (line == null) {
+            queue.add(Token.EOF);
+            return;
+        }
 
         Matcher matcher = pattern.matcher(line);
-        if (matcher.lookingAt()) {
-            String m = matcher.group(1);
-            if (m != null) {
-                if (matcher.group("number") != null)
-                    return new NumToken(Integer.parseInt(m));
-                else if (matcher.group("id") != null)
-                    return new IdToken(m);
-                else if (matcher.group("string") != null)
-                    return new StrToken(escaped(matcher.group("string")));
-            }
+        while (matcher.find())
+            addToken(matcher);
+
+        queue.add(Token.EOF);
+    }
+
+    private void addToken(Matcher matcher) {
+        String m = matcher.group(1);
+        if (m != null) {
+            if (matcher.group("number") != null)
+                queue.add(new NumToken(Integer.parseInt(m)));
+            else if (matcher.group("id") != null)
+                queue.add(new IdToken(m));
+            else if (matcher.group("string") != null)
+                queue.add(new StrToken(escaped(matcher.group("string"))));
         }
-        return Token.EOF;
     }
 
     private String escaped(String src) {

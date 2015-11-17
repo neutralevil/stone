@@ -2,6 +2,7 @@ package in.liub.stone_java;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.stream.Stream;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -57,6 +58,12 @@ public class LexerTest {
                    is(theOnly(string("\nA\\B\""))));
     }
 
+    @Test
+    public void multiTokens() {
+        assertThat(tokensExceptEOF("num = 345"),
+                   are(identifier("num"), identifier("="), number(345)));
+    }
+
     private ArrayList<Token> tokens(String input) {
         return tokens(input, false);
     }
@@ -97,7 +104,7 @@ public class LexerTest {
 
             @Override
             public void describeTo(Description description) {
-                description.appendValue(num);
+                description.appendText(String.valueOf(num));
             }
         };
     }
@@ -126,6 +133,36 @@ public class LexerTest {
             @Override
             public void describeTo(Description description) {
                 description.appendValue(str);
+            }
+        };
+    }
+
+    private static Matcher<ArrayList<Token>> are(Matcher<Token>... matchers) {
+        return new TypeSafeDiagnosingMatcher<ArrayList<Token>>()  {
+
+            @Override
+            public void describeTo(Description description) {
+                for (Matcher<Token> m : matchers)
+                    description
+                            .appendDescriptionOf(m).appendText(" ");
+            }
+
+            @Override
+            protected boolean matchesSafely(ArrayList<Token> items, Description mismatchDescription) {
+                boolean match = items.size() == matchers.length;
+                if (match) {
+                    for (int i = 0; i < items.size(); ++i) {
+                        match = (match && matchers[i].matches(items.get(i)));
+                        if (!match)
+                            break;
+                    }
+                }
+                if (!match) {
+                    for (Token t : items)
+                        mismatchDescription
+                                .appendText(t.getText()).appendText(" ");
+                }
+                return match;
             }
         };
     }
