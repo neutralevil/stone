@@ -64,6 +64,13 @@ public class LexerTest {
                    are(identifier("num"), identifier("="), number(345)));
     }
 
+    @Test
+    public void multiLines() {
+        assertThat(tokensExceptEOF("35\ns = \"abc\""),
+                   are(number(35),
+                       identifier("s"), identifier("="), string("abc")));
+    }
+
     private ArrayList<Token> tokens(String input) {
         return tokens(input, false);
     }

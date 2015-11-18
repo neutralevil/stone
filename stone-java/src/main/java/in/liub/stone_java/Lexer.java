@@ -17,15 +17,23 @@ public class Lexer {
 
     private final LineNumberReader reader;
     private ArrayList<Token> queue = new ArrayList<>();
+    private boolean hasMoreLine = true;
 
     public Lexer(Reader reader) {
         this.reader = new LineNumberReader(reader);
     }
 
     public Token read() {
-        if (queue.isEmpty())
+        if (fillQueue(0))
+            return queue.remove(0);
+        return Token.EOF;
+    }
+
+    private boolean fillQueue(int index) {
+        while (index >= queue.size() && hasMoreLine)
             readLine();
-        return queue.remove(0);
+
+        return (index < queue.size());
     }
 
     private void readLine() {
@@ -37,15 +45,13 @@ public class Lexer {
         }
 
         if (line == null) {
-            queue.add(Token.EOF);
+            hasMoreLine = false;
             return;
         }
 
         Matcher matcher = pattern.matcher(line);
         while (matcher.find())
             addToken(matcher);
-
-        queue.add(Token.EOF);
     }
 
     private void addToken(Matcher matcher) {
