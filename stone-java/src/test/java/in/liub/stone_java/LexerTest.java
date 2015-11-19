@@ -71,18 +71,30 @@ public class LexerTest {
                        identifier("s"), identifier("="), string("abc")));
     }
 
+    @Test
+    public void peak() {
+        ArrayList<Token> peeked = new ArrayList<>();
+        Lexer lexer = lex("num = 345");
+        for (int i = 0; i < 4; ++i)
+            peeked.add(lexer.peek(i));
+
+        assertThat(tokens(lexer, false), equalTo(peeked));
+    }
+
+    private Lexer lex(String input) {
+        return new Lexer(new StringReader(input));
+    }
     private ArrayList<Token> tokens(String input) {
-        return tokens(input, false);
+        return tokens(lex(input), false);
     }
 
     private ArrayList<Token> tokensExceptEOF(String input) {
-        return tokens(input, true);
+        return tokens(lex(input), true);
     }
 
-    private ArrayList<Token> tokens(String input, boolean ignoreEOF) {
+    private ArrayList<Token> tokens(Lexer lexer, boolean ignoreEOF) {
         ArrayList<Token> ret = new ArrayList<>();
         Token t;
-        Lexer lexer = new Lexer(new StringReader(input));
         do {
             t = lexer.read();
             if (t == Token.EOF && ignoreEOF)

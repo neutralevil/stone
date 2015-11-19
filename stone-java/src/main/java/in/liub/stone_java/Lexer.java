@@ -29,6 +29,12 @@ public class Lexer {
         return Token.EOF;
     }
 
+    public Token peek(int i) {
+        if (fillQueue(i))
+            return queue.get(i);
+        return Token.EOF;
+    }
+
     private boolean fillQueue(int index) {
         while (index >= queue.size() && hasMoreLine)
             readLine();
@@ -84,6 +90,7 @@ public class Lexer {
         }
         return sb.toString();
     }
+
 }
 
 class NumToken extends Token {
