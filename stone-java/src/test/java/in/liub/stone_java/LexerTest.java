@@ -41,7 +41,8 @@ public class LexerTest {
     @Test
     public void operators() {
         String [] testcases = {
-                "==", "<=", ">=", "&&", "||", "+", "-", "*", "/", "="};
+                "==", "<=", ">=", "<", ">",
+                "&&", "||", "+", "-", "*", "/", "%", "="};
         for (String t : testcases)
             assertThat(tokensExceptEOF(t), is(theOnly(identifier(t))));
     }
