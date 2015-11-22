@@ -14,7 +14,7 @@ public class ASTLeafTest {
 
     @Before
     public void setUp() {
-        this.leaf = new ASTLeaf();
+        this.leaf = new ASTLeaf(Token.numberOf(321));
     }
 
     @After

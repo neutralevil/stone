@@ -4,6 +4,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class ASTLeaf extends ASTree {
+    private final Token token;
+
+    public ASTLeaf(Token token) {
+        this.token = token;
+    }
+
     @Override
     public int numChildren() {
         return 0;
@@ -18,5 +24,9 @@ public class ASTLeaf extends ASTree {
     @Override
     public Iterator<ASTree> children() {
         return empty.iterator();
+    }
+
+    public Token token() {
+        return this.token;
     }
 }

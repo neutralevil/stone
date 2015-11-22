@@ -10,8 +10,8 @@ import java.util.regex.Pattern;
 public class Lexer {
     private static Pattern pattern = Pattern.compile(
             "\\s*((?://.*)|" +
-            "(?<number>[0-9]+)" +
-            "|(?:\"(?<string>(\\\\n|\\\\\\\\|\\\\\"|[^\"])*)\")" +
+            "(?<num>[0-9]+)" +
+            "|(?:\"(?<str>(\\\\n|\\\\\\\\|\\\\\"|[^\"])*)\")" +
             "|(?<id>[a-z_A-Z][a-z_A-Z0-9]*|==|<=|>=|&&|\\|\\||\\p{Punct})" +
             ")");
 
@@ -63,12 +63,12 @@ public class Lexer {
     private void addToken(Matcher matcher) {
         String m = matcher.group(1);
         if (m != null) {
-            if (matcher.group("number") != null)
-                queue.add(new NumToken(Integer.parseInt(m)));
+            if (matcher.group("num") != null)
+                queue.add(Token.numberOf(Integer.parseInt(m)));
             else if (matcher.group("id") != null)
-                queue.add(new IdToken(m));
-            else if (matcher.group("string") != null)
-                queue.add(new StrToken(escaped(matcher.group("string"))));
+                queue.add(Token.identifierOf(m));
+            else if (matcher.group("str") != null)
+                queue.add(Token.stringOf(escaped(matcher.group("str"))));
         }
     }
 
@@ -89,65 +89,5 @@ public class Lexer {
             sb.append(c);
         }
         return sb.toString();
-    }
-
-}
-
-class NumToken extends Token {
-    private int value;
-
-    public NumToken(int num) {
-        value = num;
-    }
-
-    @Override
-    public boolean isNumber() {
-        return true;
-    }
-
-    @Override
-    public int getNumber() {
-        return value;
-    }
-
-    @Override
-    public String getText() {
-        return String.valueOf(value);
-    }
-}
-
-class IdToken extends Token {
-    private final String text;
-
-    public IdToken(String id) {
-        text = id;
-    }
-
-    @Override
-    public boolean isIdentifier() {
-        return true;
-    }
-
-    @Override
-    public String getText() {
-        return text;
-    }
-}
-
-class StrToken extends Token {
-    private final String text;
-
-    public StrToken(String text) {
-        this.text = text;
-    }
-
-    @Override
-    public boolean isString() {
-        return true;
-    }
-
-    @Override
-    public String getText() {
-        return text;
     }
 }
