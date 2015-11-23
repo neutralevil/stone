@@ -1,6 +1,7 @@
 package in.liub.stone_java;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 
 public class ASTLeaf extends ASTree {
@@ -20,10 +21,9 @@ public class ASTLeaf extends ASTree {
         throw new IndexOutOfBoundsException("no child in ASTLeaf");
     }
 
-    private static ArrayList<ASTree> empty = new ArrayList<>();
     @Override
     public Iterator<ASTree> children() {
-        return empty.iterator();
+        return Collections.emptyIterator();
     }
 
     public Token token() {
